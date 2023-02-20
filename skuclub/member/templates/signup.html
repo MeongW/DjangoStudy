@@ -3,12 +3,16 @@
 	<meta charset="UTF-8">
 </head>
 <h2>회원가입</h2>
-<form method="POST">{% csrf_token %}
-	<label for="email">이메일</label>
-	<input type="text" name="email"><br>
-	<label for="password">패스워드</label>
-	<input type="password" name="password"><br>
-	<label for="name">이름</label>
-	<input type="text" name="name"><br>
+<form method="POST">
+	{% csrf_token %}
+	<label for="{{ form.account_email.id_for_label }}">이메일 주소: </label>
+	{{ form.account_email }}<br>
+	<label for="{{ form.account_pw.id_for_label }}">패스워드: </label>
+	{{ form.account_pw }}<br>
+	<label for="{{ form.account_name.id_for_label }}">이름: </label>
+	{{ form.account_name }}<br>
 	<button type="submit">회원가입</button>
 </form>
+{% if email_error %}
+이미 존재하거나, 잘못된 형식의 이메일입니다.
+{% endif %}

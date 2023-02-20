@@ -1,15 +1,22 @@
 from django.shortcuts import render, redirect
 from .models import Account
+from .forms import SignUpForm, LoginForm
+from django.contrib import messages
+from django.core.exceptions import ValidationError
 
 def signup(request):
+    email_error = False
     if request.method == 'POST':
-        Account.objects.create(
-            account_email = request.POST['email'],
-            account_pw = request.POST['password'],
-            account_name = request.POST['name'],
-        )
-        return redirect('login')
-    return render(request, 'signup.html')
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+        if 'account_email' in form.errors:
+            email_error = True
+    else:
+        form = SignUpForm()
+        
+    return render(request, 'signup.html', {'form':form, 'email_error':email_error})
 
 def login(request):
     if request.method == 'POST':

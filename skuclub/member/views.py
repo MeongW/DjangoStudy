@@ -33,7 +33,6 @@ def login(request):
     return render(request, 'login.html', {'form':form, 'login_fail':False})
 
 def index(request):
-    del request.session['user_id']
     email = request.session.get('user_id')
     if email:
         name = Account.objects.get(account_email=email)

@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Account
 from .forms import SignUpForm, LoginForm
-from django.contrib import messages
-from django.core.exceptions import ValidationError
 
 def signup(request):
     email_error = False
@@ -20,19 +18,25 @@ def signup(request):
 
 def login(request):
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user_email = Account.objects.filter(
-            account_email = email,
-            account_pw = password
-        )
-        if not user_email:
-            return render(request, 'login.html', {'login_fail':True})
-        return render(request, 'login.html', {'login_success':True, 'email':email})
-    return render(request, 'login.html', {'login_fail':False})
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user_email = Account.objects.filter(
+                account_email = form.cleaned_data['account_email'],
+                account_pw = form.cleaned_data['account_pw']
+            )
+            if not user_email:
+                return render(request, 'login.html', {'form':form, 'login_fail':True})
+            request.session['user_id'] = form.cleaned_data['account_email']
+            return redirect('index')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form':form, 'login_fail':False})
 
 def index(request):
-    if 'email' in request.GET:
-        name = Account.objects.get(account_email=request.GET['email']).account_name
-        return render(request, 'index.html', {'name':name})
+    del request.session['user_id']
+    email = request.session.get('user_id')
+    if email:
+        name = Account.objects.get(account_email=email)
+        if name:
+            return render(request, 'index.html', {'name':name.account_name})
     return render(request, 'index.html', {'name':'GUEST'})

@@ -3,15 +3,14 @@
 	<meta charset="UTF-8">
 </head>
 <h2>로그인</h2>
-<form method="POST">{% csrf_token %}
-	<label for="email">이메일</label>
-	<input type="text" name="email"><br>
-	<label for="password">패스워드</label>
-	<input type="password" name="password"><br>
+<form method="POST">
+	{% csrf_token %}
+	<label for="{{ form.account_email.id_for_label }}">이메일 주소: </label>
+	{{ form.account_email }}<br>
+	<label for="{{ form.account_pw.id_for_label }}">패스워드: </label>
+	{{ form.account_pw }}<br>
 	<button type="submit">로그인</button>
 </form>
 {% if login_fail %}
 	<h1>로그인 실패</h1>
-{% elif login_success %}
-	<script>location.href="../index?email={{email}}"</script>
 {% endif %}

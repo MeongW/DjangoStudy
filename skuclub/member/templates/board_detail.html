@@ -1,0 +1,31 @@
+<style>
+    table {
+        width: 100%;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+    }
+</style>
+<div>
+    <h2>{{ post.title }}</h2>
+    <table>
+    <tr>
+        <td>작성자</td><td>{{ post.author.name }}</td>
+        <td>작성시간</td><td>{{ post.created_at }}</td>
+    </tr>
+    <tr>
+        <td>내용: </td>
+        <td colspan='3'>{{ post.content|linebreaks }}</td>
+    </tr>
+    </table?
+</div>
+<a href="{% url 'board_edit' post.pk %}">수정</a> | <a href="{% url 'board_delete' post.pk %}">삭제</a>
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alert('{{ message }}')
+        {% endfor %}
+    </script>
+{% endif %}

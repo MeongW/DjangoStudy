@@ -1,16 +1,18 @@
 from django import forms
-from .models import Account
-from django.core.exceptions import ValidationError
+from .models import CustomUser
+from django.contrib.auth.forms import UserCreationForm
 
-class SignUpForm(forms.ModelForm):
-    account_email = forms.EmailField(required=True)
-    account_pw = forms.CharField(max_length=32, required=True, widget=forms.PasswordInput)
-    account_name = forms.CharField(max_length=32, required=True)
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(max_length=128)
+    password1 = forms.CharField(max_length=32)
+    password2 = forms.CharField(max_length=32)
+    name = forms.CharField(max_length=32)
+    school = forms.CharField(max_length=32)
 
     class Meta:
-        model = Account
-        fields = ['account_email', 'account_pw', 'account_name']
+        model = CustomUser
+        fields = ['email', 'password1', 'password2', 'name', 'school']
 
 class LoginForm(forms.Form):
-    account_email = forms.EmailField(required=True)
-    account_pw = forms.CharField(max_length=32, required=True, widget=forms.PasswordInput)
+    email = forms.EmailField(max_length=128, required=True, widget=forms.EmailInput)
+    password = forms.CharField(max_length=32, required=True, widget=forms.PasswordInput)

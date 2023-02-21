@@ -1,41 +1,38 @@
 from django.shortcuts import render, redirect
-from .models import Account
+from django.contrib.auth import authenticate, login
 from .forms import SignUpForm, LoginForm
 
-def signup(request):
-    email_error = False
+def user_signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
-        if 'account_email' in form.errors:
-            email_error = True
+        
     else:
         form = SignUpForm()
-        
-    return render(request, 'signup.html', {'form':form, 'email_error':email_error})
+    return render(request, 'signup.html', {'form':form})
 
-def login(request):
+def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            user_email = Account.objects.filter(
-                account_email = form.cleaned_data['account_email'],
-                account_pw = form.cleaned_data['account_pw']
-            )
-            if not user_email:
-                return render(request, 'login.html', {'form':form, 'login_fail':True})
-            request.session['user_id'] = form.cleaned_data['account_email']
-            return redirect('index')
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('index')
+            else:
+                form.add_error('password', "로그인에 실패하였습니다.")
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form':form, 'login_fail':False})
+    return render(request, 'login.html', {'form':form})
 
 def index(request):
-    email = request.session.get('user_id')
-    if email:
-        name = Account.objects.get(account_email=email)
+    try:
+        name = request.user.name
         if name:
-            return render(request, 'index.html', {'name':name.account_name})
-    return render(request, 'index.html', {'name':'GUEST'})
+            return render(request, 'index.html', {'name':name})
+    except:
+        return render(request, 'index.html', {'name':'GUEST'})

@@ -1,33 +1,37 @@
-<style>
-    table {
-        width: 100%;
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-    th, td {
-        border: 1px solid black;
-    }
-</style>
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 <h2>게시판</h2>
-<a href="{% url 'board_create' %}">새 글 작성</a>
-<table>
+<div>
+<table class="table table-hover">
+    <thead class="table-light">
     <th>id</th>
-    <th>제목</th>
+    <th style = 'width:70%;'>제목</th>
     <th>작성자</th>
+    </thead>
+    <tbody>
     {% if posts %}
     {% for post in posts %}
-        <tr>
+        <tr onClick="location.href='{% url 'board_detail' post.pk %}'">
             <td>{{ post.pk }}</td>
-            <td><a href="{% url 'board_detail' post.pk %}">{{ post.title }}</a></td>
+            <td>{{ post.title }}</td>
             <td>{{ post.author.name }}</td>
         </tr>
     {% endfor %}
     {% else %}
-        <tr>
-            <td colspan='3' style="text-align:center">게시글이 없습니다.</td>
-        </tr>
+    <tr>
+        <td colspan='3' class='text-center'>게시글이 없습니다.</td>
+    </tr>
     {% endif %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan='3' class='text-center'></td>
+        </tr>
+    </tfoot>
 </table>
+<a href="{% url 'board_create' %}" class='btn btn-secondary btn-sm' style="float:right">새 글 작성</a>
+</div>
 {% if messages %}
     <script>
         {% for message in messages %}
